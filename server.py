@@ -76,15 +76,33 @@ def handle_tool_call(name, arguments):
     elif name == "zellij_write":
         text = arguments.get("text", "")
         enter = arguments.get("enter", False)
+        speed = arguments.get("speed", "instant")
+
+        # Resolve speed to delay in seconds
+        speed_presets = {"instant": 0, "fast": 0.05, "human": 0.12, "slow": 0.25}
+        if isinstance(speed, str):
+            delay = speed_presets.get(speed, 0)
+        else:
+            delay = speed / 1000.0  # integer = milliseconds
 
         if enter:
             text += "\n"
 
-        # Escape for shell
-        escaped = text.replace("'", "'\\''")
-        cmd = f"{zenv} zellij action write-chars '{escaped}'"
-        run_ssh(host, cmd)
-        return [{"type": "text", "text": f"OK: sent {len(text)} chars to {session}"}]
+        if delay == 0:
+            # Instant: send all at once
+            escaped = text.replace("'", "'\\''")
+            cmd = f"{zenv} zellij action write-chars '{escaped}'"
+            run_ssh(host, cmd)
+        else:
+            # Character by character with delay
+            import time
+            for char in text:
+                escaped = char.replace("'", "'\\''")
+                cmd = f"{zenv} zellij action write-chars '{escaped}'"
+                run_ssh(host, cmd)
+                time.sleep(delay)
+
+        return [{"type": "text", "text": f"OK: sent {len(text)} chars to {session} (speed: {speed})"}]
 
     elif name == "zellij_list_sessions":
         output = run_ssh(host, "zellij list-sessions 2>&1")
@@ -118,6 +136,7 @@ TOOLS = [
                 "session": {"type": "string", "description": "Zellij session name. If omitted, auto-detects the single active session."},
                 "text": {"type": "string", "description": "Text to type into the terminal."},
                 "enter": {"type": "boolean", "description": "Append Enter/newline after the text (execute command)", "default": False},
+                "speed": {"description": "Typing speed. String presets: 'instant' (default), 'fast' (~50ms), 'human' (~120ms), 'slow' (~250ms). Or integer = milliseconds between characters.", "default": "instant"},
             },
             "required": ["text"],
         },
