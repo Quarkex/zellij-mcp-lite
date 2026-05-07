@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zellij-mcp-lite"
+version = "1.0.0"
+description = "Minimalist MCP server for Zellij terminal interaction — 200 lines, zero dependencies"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Manlio García" }]
+requires-python = ">=3.8"
+keywords = ["mcp", "zellij", "terminal", "ai", "pair-programming"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+]
+
+[project.urls]
+Repository = "https://github.com/quarkex/zellij-mcp-lite"
+
+[project.scripts]
+zellij-mcp-lite = "zellij_mcp_lite:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+include = ["server.py"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"server.py" = "zellij_mcp_lite.py"
