@@ -43,11 +43,17 @@ pip install zellij-mcp-lite
   "mcpServers": {
     "zellij": {
       "command": "python3",
-      "args": ["/path/to/server.py"]
+      "args": ["/path/to/server.py"],
+      "env": {
+        "HOME": "/home/youruser",
+        "SSH_AUTH_SOCK": "/tmp/ssh-xxx/agent.123"
+      }
     }
   }
 }
 ```
+
+The `env` keys are only needed for SSH remote access. For local-only usage, omit them.
 
 ### Hermes Agent (`~/.hermes/config.yaml`)
 
@@ -57,7 +63,12 @@ mcp_servers:
     command: python3
     args:
       - /path/to/server.py
+    env:
+      HOME: /home/youruser          # needed for SSH key discovery
+      SSH_AUTH_SOCK: /tmp/ssh-xxx/agent.123  # needed for SSH agent forwarding
 ```
+
+The `env` block is only needed if you use the SSH feature (remote hosts). For local-only usage, just `command` and `args` suffice.
 
 ### Generic MCP Client
 
