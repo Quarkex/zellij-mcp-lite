@@ -109,9 +109,12 @@ Type text into the focused pane. Like pressing keys on the keyboard.
 | `session` | string | Session name. Auto-detects if only one active. |
 | `text` | string | **Required.** Text to type. |
 | `enter` | boolean | Append Enter after text (default: false) |
+| `speed` | string or int | Typing speed. Presets: `"instant"` (default), `"fast"` (~50ms), `"human"` (~120ms), `"slow"` (~250ms). Or integer = milliseconds between characters. |
 
 ```json
 {"name": "zellij_write", "arguments": {"text": "cargo build", "enter": true}}
+{"name": "zellij_write", "arguments": {"text": "mix test", "speed": "fast"}}
+{"name": "zellij_write", "arguments": {"text": "echo hello", "speed": 80, "enter": true}}
 ```
 
 ### `zellij_list_sessions`
